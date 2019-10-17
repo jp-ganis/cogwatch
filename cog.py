@@ -64,13 +64,12 @@ class Cog():
 			cog.i[my_comm] += my_amount
 			cog.i[their_comm] -= their_amount
 			
-			print(self, cog, terms)
-			
+			# print(self, cog, terms)
 		return valid_deal
 	
 	def die(self):
 		self.dead = True
-		print("\n",self.name,"died\n")
+		# print("\n",self.name,"died\n")
 			
 	def __str__(self):
 		if self.dead: return "{}: DEAD".format(self.name)
