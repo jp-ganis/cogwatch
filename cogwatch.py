@@ -8,15 +8,24 @@ class Populous():
 class Farmer(Cog):
 	def __init__(self):
 		Cog.__init__(self)
-		self.name = "farmer "+self.name 
+		self.name = "farmer "+self.name
+		self.employer = None
 		
 	def live_day(self):
+		v = 0
+		
 		if self.i["salt"] < self.i["cybrous"]:
-			self.mine("salt")
+			comm = "salt"
 		else:
-			self.mine("cybrous")
+			comm = "cybrous"
+			
+		v = self.mine(comm)
+			
+		if self.employer != None:
+			self.trade(self.employer, (v, comm, 3, "dollars"))
 			
 		Cog.live_day(self)
+		
 		
 class Bouj(Cog):
 	def __init__(self):
@@ -43,8 +52,33 @@ class Bouj(Cog):
 			terms = (amount, comm, price_per_unit * amount, "dollars")
 			self.trade(cog_max, terms)
 			
+		Cog.live_day(self)
+		
+class Bossman(Cog):
+	def __init__(self):
+		Cog.__init__(self)
+		self.name = "boss "+self.name 
+		self.workers = []
+		
+	def hire(self, cog):
+		self.workers.append(cog)
+		cog.employer = self
+		
+	def live_day(self):
+		for comm in ["salt", "cybrous"]:
+			for i in range(10):
+				if self.i["comm"] <= 2: break
+				
+				cog_min = min(Populous.Population, key=lambda c: c.i[comm])
+				amount = 1
+				price_per_unit = 5
+				
+				terms = (amount, comm, price_per_unit * amount, "dollars")
+				self.trade(cog_max, terms)
 	
 		Cog.live_day(self)
+		
+		
 		
 class Church(Cog):
 	def __init__(self):
@@ -86,6 +120,7 @@ def episode(debug=False):
 		fiu.name = "mr fiu"
 		
 	pop.append(fiu)
+	pop.append(Bossman())
 	
 	for i in range(15):
 		pop.append(Farmer())
