@@ -4,6 +4,10 @@ from cog import Cog
 	
 class Populous():
 	Population = []
+	
+	def max(cog, comm):
+		return max([c for c in Populous.Population if c != cog], key=lambda c: c.i[comm])
+		pass ## return cog with max of this commodity that ISNT the same cog that asked
 
 class Farmer(Cog):
 	def __init__(self):
@@ -12,9 +16,13 @@ class Farmer(Cog):
 		self.employer = None
 		
 	def live_day(self):
-		v = 0
-		
-		if self.i["salt"] < self.i["cybrous"]:
+		if self.employer != None:
+			relevant_i = self.employer.i
+		else:
+			relevant_i = self.i
+			
+			
+		if relevant_i["salt"] < relevant_i["cybrous"]:
 			comm = "salt"
 		else:
 			comm = "cybrous"
@@ -22,6 +30,7 @@ class Farmer(Cog):
 		v = self.mine(comm)
 			
 		if self.employer != None:
+			print(v, comm)
 			self.trade(self.employer, (v, comm, 3, "dollars"))
 			
 		Cog.live_day(self)
@@ -63,18 +72,19 @@ class Bossman(Cog):
 	def hire(self, cog):
 		self.workers.append(cog)
 		cog.employer = self
+		cog.name += "*"
 		
 	def live_day(self):
 		for comm in ["salt", "cybrous"]:
 			for i in range(10):
-				if self.i["comm"] <= 2: break
+				if self.i[comm] <= 2: break
 				
 				cog_min = min(Populous.Population, key=lambda c: c.i[comm])
 				amount = 1
 				price_per_unit = 5
 				
 				terms = (amount, comm, price_per_unit * amount, "dollars")
-				self.trade(cog_max, terms)
+				self.trade(cog_min, terms)
 	
 		Cog.live_day(self)
 		
@@ -120,17 +130,20 @@ def episode(debug=False):
 		fiu.name = "mr fiu"
 		
 	pop.append(fiu)
-	pop.append(Bossman())
 	
 	for i in range(15):
 		pop.append(Farmer())
 	for i in range(5):
 		pop.append(Bouj())
 		
+	b = Bossman()
+	pop.append(b)
+	b.hire(pop[1])
+		
 	church = Church()
 	pop.append(church)
 			
-	for i in range(300):		
+	for i in range(30):		
 		if debug:
 			print()
 			for c in pop:

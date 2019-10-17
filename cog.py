@@ -64,7 +64,7 @@ class Cog():
 			cog.i[my_comm] += my_amount
 			cog.i[their_comm] -= their_amount
 			
-			# print(self, cog, terms)
+			print(self, cog, terms)
 		return valid_deal
 	
 	def die(self):
